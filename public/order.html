@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Order Now - Sagor Store</title>
+    <script defer>
+      if (sessionStorage.getItem("allowP2") !== "true") {
+        window.location.href = "/home"; // redirect to P1 if not allowed
+      } else {
+        // One-time access: immediately remove session
+        sessionStorage.removeItem("allowP2");
+      }
+    </script>
+    <!-- Materialize CSS -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap");
+      * {
+        font-family: "Jost", sans-serif !important;
+        font-optical-sizing: auto !important;
+        font-weight: normal;
+        font-style: normal;
+      }
+      body {
+        background: linear-gradient(45deg, #2196f3, #21cbf3);
+        padding-bottom: 50px;
+      }
+      nav {
+        background: linear-gradient(45deg, #2196f3, #21cbf3);
+        padding: 0 20px;
+      }
+      nav .brand-logo {
+        font-weight: 700;
+        font-size: 1.6rem;
+        line-height: 64px;
+        display: flex;
+        align-items: center;
+        color: #fff !important;
+      }
+      nav .brand-logo img {
+        height: 36px;
+        margin-right: 12px;
+      }
+      .order-wrapper {
+        max-width: 800px;
+        margin: 30px auto 60px;
+        padding: 0 15px;
+      }
+      .product-card img {
+        width: 100%;
+        max-width: 300px;
+        min-height: 180px;
+        object-fit: contain;
+        border-radius: 6px;
+        display: block;
+        margin: 0 auto;
+      }
+      .card {
+        padding: 20px 25px;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgb(33 203 243 / 0.25);
+      }
+      h4 {
+        color: #0277bd;
+        font-weight: 700;
+        margin-bottom: 25px;
+      }
+      label {
+        font-weight: 600;
+        color: #0277bd;
+      }
+      .input-field input,
+      .input-field textarea {
+        font-size: 1rem;
+        color: #333;
+      }
+      .input-field input:focus,
+      .input-field textarea:focus {
+        border-bottom: 1px solid #21cbf3 !important;
+        box-shadow: none !important;
+      }
+      .btn {
+        background: linear-gradient(45deg, #2196f3, #21cbf3);
+        font-weight: 700;
+        letter-spacing: 0.6px;
+        width: 100%;
+        border-radius: 30px;
+      }
+      .footer {
+        text-align: center;
+        padding: 20px 10px;
+        color: #555;
+        font-weight: 600;
+        margin-top: 40px;
+        font-size: 0.9rem;
+      }
+      /* Modal overrides */
+      .modal {
+        max-width: 400px;
+        border-radius: 15px;
+        padding: 0;
+        height: 230px;
+      }
+      .modal-content {
+        font-size: 1.1rem;
+        color: #0277bd;
+        text-align: center;
+      }
+      .modal .modal-content {
+        padding: 0;
+      }
+      .modal-footer {
+        padding: 16px 24px 24px;
+        justify-content: center !important;
+        background: transparent;
+        border-top: none;
+      }
+      /* Responsive adjustments */
+      @media (max-width: 600px) {
+        nav .brand-logo {
+          font-size: 1.2rem;
+          line-height: 56px;
+        }
+        .order-wrapper {
+          margin: 20px 15px 50px;
+          padding: 0 10px;
+        }
+        h4 {
+          font-size: 1.5rem;
+          margin-bottom: 20px;
+        }
+        .modal {
+          max-width: 90%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Materialize Navbar -->
+    <nav>
+      <div class="nav-wrapper">
+        <a href="/home" class="brand-logo" id="siteBrand"> Loading... </a>
+      </div>
+    </nav>
+
+    <!-- Modal Structure -->
+    <div id="orderSuccessModal" class="modal">
+      <div class="modal-content">
+        <h5>Order Confirmed!</h5>
+        <p>
+          Your order is complete <br />
+          Check your order on View Order page <br />
+          You can delete order in 10 Minutes
+        </p>
+      </div>
+      <div class="modal-footer">
+        <a
+          href="#!"
+          class="modal-close waves-effect waves-green btn btn-large"
+          onclick="redirectToViewOrders()"
+          >OK</a
+        >
+      </div>
+    </div>
+
+    <div class="container order-wrapper">
+      <div class="card product-card">
+        <div class="center-align" id="productPreview">Loading product...</div>
+      </div>
+
+      <div class="card" style="margin-top: 30px">
+        <h4>Order Now</h4>
+        <form id="orderForm" class="needs-validation" novalidate>
+          <div class="input-field">
+            <input type="text" id="name" required />
+            <label for="name">Full Name</label>
+            <span
+              class="helper-text"
+              data-error="Please enter your name."
+            ></span>
+          </div>
+          <div class="input-field">
+            <input type="tel" id="mobile" required />
+            <label for="mobile">Mobile Number</label>
+            <span
+              class="helper-text"
+              data-error="Please enter a valid mobile number."
+            ></span>
+          </div>
+          <div class="input-field">
+            <textarea
+              id="address"
+              class="materialize-textarea"
+              rows="3"
+              required
+            ></textarea>
+            <label for="address">Address</label>
+            <span
+              class="helper-text"
+              data-error="Please provide your address."
+            ></span>
+          </div>
+          <div class="input-field">
+            <input type="number" id="qty" required value="1" />
+            <label for="qty">Quantity</label>
+            <span class="helper-text" data-error="Qty"></span>
+          </div>
+          <h6
+            id="totalCost"
+            style="text-align: center; margin-bottom: 15px"
+          ></h6>
+          <button
+            type="submit"
+            class="btn waves-effect waves-light"
+            id="submit_btn"
+          >
+            Confirm Order
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer">Developed by <strong>Md Sagor Mia</strong></div>
+
+    <script>
+      // Initialization of Materialize Modal
+      document.addEventListener("DOMContentLoaded", function () {
+        var elems = document.querySelectorAll(".modal");
+        M.Modal.init(elems);
+      });
+
+      let latestMobile = "";
+
+      function redirectToViewOrders() {
+        const modalInstance = M.Modal.getInstance(
+          document.getElementById("orderSuccessModal")
+        );
+        modalInstance.close();
+        window.location.href = `/viewOrder/${latestMobile}`;
+      }
+
+      const productId = window.location.pathname.split("/").pop();
+      let currentProduct = null;
+
+      fetch("/api/getAllProductsWithImages")
+        .then((res) => res.json())
+        .then((data) => {
+          const product = data.find(
+            (p) => p.id.toString().padStart(4, "0") === productId
+          );
+          const preview = document.getElementById("productPreview");
+          if (product) {
+            currentProduct = product;
+            preview.innerHTML = `
+              <img src="/api/productImage/${product.id}" alt="Product" class="responsive-img" />
+              <h5 style="margin-top: 20px;">${product.name}</h5>
+              <h6><strong>${product.price} BDT</strong></h6>
+              <p class="grey-text">Product ID: #${productId}</p>
+            `;
+            const qty = parseInt(document.getElementById("qty").value);
+            const total =
+              qty * parseFloat(currentProduct.price) +
+              parseFloat(currentProduct.d_charge);
+            document.getElementById(
+              "totalCost"
+            ).innerHTML = `Total: ${total} BDT <br/> <span style="font-size: 0.8rem; color: #999f9f;">Delivery charge ${currentProduct.d_charge}Tk included</span>`;
+            document
+              .getElementById("qty")
+              .addEventListener("input", function () {
+                const val = this.value;
+                if (val === "") {
+                  document.getElementById(
+                    "totalCost"
+                  ).innerHTML = `<span style="color: red">Please select at least 1 Quantity</span>`;
+                  const submit = document.getElementById("submit_btn");
+                  submit.classList.add("disabled");
+                  return;
+                }
+
+                const qty = parseInt(this.value);
+                if (!currentProduct || isNaN(qty) || qty < 1) {
+                  this.value = 0;
+                  const submit = document.getElementById("submit_btn");
+                  submit.classList.add("disabled");
+                  document.getElementById(
+                    "totalCost"
+                  ).innerHTML = `<span style="color: red">Please select at least 1 Quantity</span>`;
+                  return;
+                } else {
+                  const submit = document.getElementById("submit_btn");
+                  submit.classList.remove("disabled");
+                  const total =
+                    qty * parseFloat(currentProduct.price) +
+                    parseFloat(currentProduct.d_charge);
+                  document.getElementById(
+                    "totalCost"
+                  ).innerHTML = `Total: ${total} BDT <br/> <span style="font-size: 0.8rem; color: #999f9f;">Delivery charge ${currentProduct.d_charge}Tk included</span>`;
+                }
+              });
+          } else {
+            preview.innerHTML = "<p class='red-text'>Product not found.</p>";
+          }
+        });
+
+      document.getElementById("mobile").addEventListener("input", function () {
+        this.value = this.value.replace(/[^0-9]/g, ""); // only digits allowed
+      });
+
+      const form = document.getElementById("orderForm");
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        if (!form.checkValidity()) {
+          form.classList.add("was-validated");
+          return;
+        }
+
+        let mobileRaw = document.getElementById("mobile").value.trim();
+
+        if (mobileRaw.startsWith("+88")) {
+          mobileRaw = mobileRaw.slice(3);
+        } else if (mobileRaw.startsWith("88")) {
+          mobileRaw = mobileRaw.slice(2);
+        }
+
+        latestMobile = mobileRaw;
+        const qty = parseInt(document.getElementById("qty").value.trim()) || 1;
+        const totalCost =
+          qty * parseFloat(currentProduct.price) +
+          parseFloat(currentProduct.d_charge);
+        const orderData = {
+          product_id: productId,
+          product_name: currentProduct?.name || "",
+          name: document.getElementById("name").value.trim(),
+          mobile: latestMobile,
+          address: document.getElementById("address").value.trim(),
+          qty: document.getElementById("qty").value.trim(),
+          total_price: totalCost,
+          d_charge: currentProduct.d_charge,
+          p_price: currentProduct.price,
+        };
+
+        try {
+          const res = await fetch("/api/submitOrder", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(orderData),
+          });
+          const result = await res.json();
+
+          if (result.success) {
+            const modalInstance = M.Modal.getInstance(
+              document.getElementById("orderSuccessModal")
+            );
+            modalInstance.open();
+            form.reset();
+            form.classList.remove("was-validated");
+          } else {
+            alert("❌ Failed to place order. Please try again.");
+          }
+        } catch (err) {
+          console.error("Error:", err);
+          alert("Something went wrong. Try again later.");
+        }
+      });
+
+      fetch("/api/siteSettings")
+        .then((res) => res.json())
+        .then(({ success, settings }) => {
+          if (!success) return;
+
+          document.title = "Order Page | " + (settings.siteName || "Store");
+
+          // Favicon
+          const favicon = document.createElement("link");
+          favicon.rel = "icon";
+          favicon.type = "image/png";
+          favicon.href = "/api/siteImageGet/favicon";
+          document.head.appendChild(favicon);
+
+          // Brand (Logo / Site Name)
+          const showLogo = settings.show_logo === "true";
+          const showName = settings.show_site_name === "true";
+          const brand = document.getElementById("siteBrand");
+
+          if (showLogo && showName) {
+            brand.innerHTML = `<img src="/api/siteImageGet/logo" alt="Logo" /> ${settings.siteName}`;
+          } else if (showLogo) {
+            brand.innerHTML = `<img src="/api/siteImageGet/logo" alt="Logo" />`;
+          } else if (showName) {
+            brand.textContent = settings.siteName;
+          } else {
+            brand.textContent = "Sagor Store";
+          }
+        });
+    </script>
+
+    <!-- Materialize JS -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"
+      defer
+    ></script>
+  </body>
+</html>

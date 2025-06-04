@@ -1,0 +1,133 @@
+<div class="container py-5" style="width: 100%">
+  <div class="rounded">
+    <h4 class="fw-bold mb-4 text-center border-bottom pb-3">Site Settings</h4>
+
+    <form
+      id="siteSettingsForm"
+      enctype="multipart/form-data"
+      style="background: #ffffff40; padding: 1rem"
+    >
+      <!-- Site Identity -->
+      <div class="mb-4">
+        <h5 class="mb-3 text-primary">Site Identity</h5>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="siteName" class="form-label">Site Name</label>
+            <input type="text" class="form-control" id="siteName" />
+            <div class="form-check mt-2">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="showSiteName"
+              />
+              <label class="form-check-label" for="showSiteName"
+                >Show Site Name</label
+              >
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="logoUpload" class="form-label">Site Logo</label>
+            <input
+              type="file"
+              class="form-control"
+              id="logoUpload"
+              accept="image/*"
+            />
+            <img id="logoPreview" class="mt-2" style="max-height: 50px" />
+            <div class="form-check mt-2">
+              <input class="form-check-input" type="checkbox" id="showLogo" />
+              <label class="form-check-label" for="showLogo">Show Logo</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="faviconUpload" class="form-label">Favicon</label>
+            <input
+              type="file"
+              class="form-control"
+              id="faviconUpload"
+              accept="image/*"
+            />
+            <img id="faviconPreview" class="mt-2" style="max-height: 50px" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Header Settings -->
+      <div class="mb-4 pt-4 border-top">
+        <h5 class="mb-3 text-primary">Header Settings</h5>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="headerTitle" class="form-label">Header Title</label>
+            <input type="text" class="form-control" id="headerTitle" />
+          </div>
+          <div class="col-md-6">
+            <label for="productSectionTitle" class="form-label"
+              >Products Title</label
+            >
+            <input type="text" class="form-control" id="productSectionTitle" />
+          </div>
+          <div class="col-12" style="visibility: hidden">
+            <div class="form-check mt-2">
+              <input class="form-check-input" type="checkbox" id="showSearch" />
+              <label class="form-check-label" for="showSearch"
+                >Show Search Icon</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Header Buttons Moved Inside Here -->
+        <div class="mt-4 pt-4 border-top">
+          <h5 class="mb-3 text-primary">Header Buttons</h5>
+          <div class="row g-2 align-items-end mb-3">
+            <div class="col-md-5">
+              <label for="newButtonText" class="form-label">Button Text</label>
+              <input type="text" id="newButtonText" class="form-control" />
+            </div>
+            <div class="col-md-5">
+              <label for="newButtonLink" class="form-label">Button Link</label>
+              <input type="text" id="newButtonLink" class="form-control" />
+            </div>
+            <div class="col-md-2 text-end">
+              <button
+                type="button"
+                class="btn btn-primary w-100"
+                onclick="addHeaderButton()"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+          <ul id="headerButtonsList" class="list-group"></ul>
+        </div>
+      </div>
+
+      <!-- Banner Section -->
+      <div class="mb-4 pt-4 border-top">
+        <h5 class="mb-3 text-primary">Banner Section</h5>
+        <div class="row g-3">
+          <div class="col-md-12">
+            <label for="bannerTitle" class="form-label">Banner Title</label>
+            <input type="text" class="form-control" id="bannerTitle" />
+          </div>
+          <div class="col-md-12" style="display: none">
+            <label for="bannerImage" class="form-label">Banner Image</label>
+            <input
+              type="file"
+              class="form-control"
+              id="bannerImage"
+              accept="image/*"
+            />
+            <img id="bannerPreview" class="mt-2" style="max-height: 150px" />
+          </div>
+        </div>
+      </div>
+
+      <div class="text-end pt-3 border-top mt-4">
+        <button type="submit" class="btn btn-success px-4">
+          <i class="bi bi-save me-1"></i> Save Settings
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

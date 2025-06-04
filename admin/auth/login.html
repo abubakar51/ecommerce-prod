@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Login</title>
+
+    <!-- Materialize CSS -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+      rel="stylesheet"
+    />
+    <!-- Material Icons -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Jost", sans-serif;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(-45deg, #ff6ec4, #7873f5, #47e9ff, #ffc371);
+        background-size: 400% 400%;
+        animation: gradientBG 6s ease infinite;
+      }
+
+      @keyframes gradientBG {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .login-box {
+        background: #ffffff;
+        padding: 35px 30px;
+        border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        width: 90%;
+        max-width: 400px;
+        animation: fadeIn 0.6s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .login-title {
+        text-align: center;
+        font-size: 2rem;
+        font-weight: 600;
+        color: #26a69a;
+        margin-bottom: 30px;
+      }
+
+      .input-field input {
+        color: #26a69a !important;
+        font-size: 1rem;
+      }
+
+      .input-field label {
+        font-size: 0.9rem;
+      }
+
+      .remember-forgot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+        flex-wrap: wrap; /* allow wrap on small screens */
+        gap: 5px; /* optional spacing between items */
+      }
+
+      .forgot-link {
+        font-size: 0.85rem;
+        color: #26a69a;
+        text-decoration: underline;
+      }
+
+      .forgot-link:hover {
+        text-decoration: none;
+      }
+
+      .btn-custom {
+        width: 100%;
+        margin-top: 25px;
+        background-color: #26a69a;
+        border-radius: 8px;
+        font-weight: bold;
+      }
+
+      @media (max-width: 480px) {
+        .remember-forgot {
+          flex-wrap: nowrap; /* prevent wrap */
+          flex-direction: row;
+          justify-content: space-between;
+        }
+
+        .forgot-link {
+          text-align: right;
+          margin-top: 0; /* remove vertical spacing */
+          font-size: 0.8rem;
+        }
+
+        .remember-forgot label span {
+          font-size: 0.8rem;
+        }
+
+        .input-field label {
+          font-size: 0.8rem;
+        }
+
+        .input-field input {
+          font-size: 0.95rem;
+        }
+
+        .btn-custom {
+          font-size: 0.95rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-box">
+      <h4 class="login-title">Admin Login</h4>
+      <form id="loginForm">
+        <div class="input-field">
+          <i class="material-icons prefix">account_circle</i>
+          <input id="username" type="text" required />
+          <label for="username">Username</label>
+        </div>
+
+        <div class="input-field">
+          <i class="material-icons prefix">lock</i>
+          <input id="password" type="password" required />
+          <label for="password">Password</label>
+        </div>
+
+        <div class="remember-forgot">
+          <label style="margin-left: 5px">
+            <input type="checkbox" id="remember" />
+            <span>Remember me</span>
+          </label>
+          <a href="/forgot" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn waves-effect waves-light btn-custom">
+          Login
+        </button>
+      </form>
+    </div>
+
+    <!-- Materialize JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <script>
+      fetch("/api/siteSettings")
+        .then((res) => res.json())
+        .then(({ success, settings }) => {
+          if (!success) return;
+          // Favicon
+          const favicon = document.createElement("link");
+          favicon.rel = "icon";
+          favicon.type = "image/png";
+          favicon.href = "/api/siteImageGet/favicon";
+          document.head.appendChild(favicon);
+        });
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const username = document.getElementById("username").value.trim();
+          const password = document.getElementById("password").value.trim();
+          const remember = document.getElementById("remember").checked;
+
+          const res = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password, remember }),
+          });
+
+          const data = await res.json();
+          if (data.success) {
+            location.href = "/admin";
+          } else {
+            M.toast({
+              html: `<span style="display: flex; align-items: center;">
+                      <i class="material-icons" style="font-size: 18px; margin-right: 8px;">warning</i>
+                      <span>Wrong username or password</span>
+                    </span>`,
+              classes: "red lighten-1 white-text",
+            });
+          }
+        });
+    </script>
+  </body>
+</html>

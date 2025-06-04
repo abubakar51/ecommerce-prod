@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Dashboard</title>
+    <link rel="shortcut icon" href="img/icons/icon-48x48.png" />
+    <link rel="stylesheet" href="./loader.css" />
+    <link href="app.css" rel="stylesheet" />
+    <link rel="stylesheet" href="bg-an.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap");
+      * {
+        font-family: "Jost", sans-serif !important;
+        font-optical-sizing: auto !important;
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      .hamburger,
+      .hamburger:after,
+      .hamburger:before {
+        background: #fff;
+      }
+      .sidebar-link .submenu-arrow {
+        transition: transform 0.3s ease;
+      }
+      .submenu-arrow.rotate {
+        transform: rotate(90deg);
+      }
+      .slide-up {
+        animation: slideInUp 0.5s ease;
+      }
+      @keyframes slideInUp {
+        from {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .breadcrumb-nav {
+        font-size: 14px;
+        color: #fff;
+        margin-bottom: 15px;
+        background: antiquewhite;
+        padding: 12px 25px;
+        border-radius: 5px;
+      }
+      .breadcrumb-nav a {
+        font-size: 12px;
+        font-weight: bold;
+        text-decoration: none;
+        color: #ff6656;
+        transition: color 0.2s;
+      }
+      .breadcrumb-nav a:hover {
+        color: #0056b3;
+      }
+      .breadcrumb-nav .separator {
+        margin: 0 6px;
+        color: #333;
+      }
+      .breadcrumb-nav .active {
+        color: #177ea0;
+        font-weight: 600;
+      }
+      .content {
+        padding: 1rem !important;
+      }
+
+      .card {
+        height: 150px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        padding: 10px 15px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .card_header {
+        color: #fff;
+        margin: 0;
+        font-weight: 600;
+        font-size: 14px;
+        position: absolute;
+        top: 15px;
+        left: 15px;
+      }
+      .card_div {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .card_count {
+        margin: 0;
+        font-weight: 700;
+        font-size: 28px;
+        color: #fff;
+      }
+      .sidebar-link,
+      a.sidebar-link {
+        background: transparent !important;
+        color: #fff !important;
+      }
+      .sidebar-item.active .sidebar-link:hover,
+      .sidebar-item.active > .sidebar-link {
+        border-color: #ff6656;
+        background: linear-gradient(
+          90deg,
+          rgb(59 191 185 / 39%),
+          rgb(40 161 166 / 28%) 50%,
+          transparent
+        ) !important;
+      }
+      .alert-custom {
+        margin-top: 10px;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loader-overlay">
+      <div
+        class="RadialProgress"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+      >
+        0%
+      </div>
+    </div>
+    <div class="wrapper">
+      <nav id="sidebar" class="sidebar js-sidebar">
+        <div class="sidebar-content js-simplebar">
+          <a
+            class="sidebar-brand"
+            href="/home"
+            style="padding: 1rem 1.5rem; background: #00796b !important"
+            ><span class="align-middle">Visit Site</span></a
+          >
+          <ul class="sidebar-nav" style="background: #00796b !important">
+            <li class="sidebar-header">Admin Panel</li>
+
+            <li class="sidebar-item">
+              <a
+                href="/admin/dashboard"
+                class="sidebar-link d-flex align-items-center load-page"
+                data-route
+              >
+                <i class="align-middle me-2" data-feather="sliders"></i>
+                <span class="align-middle">Dashboard</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a
+                data-bs-toggle="collapse"
+                href="#blankSubmenu"
+                class="sidebar-link d-flex justify-content-between align-items-center"
+              >
+                <span>
+                  <i class="align-middle me-2" data-feather="shopping-bag"></i>
+                  <span class="align-middle">Products</span>
+                </span>
+                <i
+                  class="align-middle me-2 submenu-arrow"
+                  data-feather="arrow-right"
+                ></i>
+              </a>
+              <ul
+                id="blankSubmenu"
+                class="sidebar-dropdown list-unstyled collapse"
+              >
+                <li class="sidebar-item">
+                  <a
+                    href="/admin/allProducts"
+                    class="sidebar-link load-page"
+                    data-route
+                    >All Products</a
+                  >
+                </li>
+                <li class="sidebar-item">
+                  <a
+                    href="/admin/newProduct"
+                    class="sidebar-link load-page"
+                    data-route
+                    >New Product</a
+                  >
+                </li>
+              </ul>
+            </li>
+            <li class="sidebar-item">
+              <a
+                href="/admin/allOrders"
+                onclick="visitAllOrders()"
+                id="allOrdersLink"
+                class="sidebar-link d-flex align-items-center load-page"
+                data-route
+              >
+                <i class="align-middle me-2" data-feather="shopping-cart"></i>
+                <span class="align-middle">All Orders</span>
+                <span
+                  id="orderBadge"
+                  class="badge bg-info ms-2"
+                  style="display: none"
+                  >0</span
+                >
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a
+                href="/admin/adminProfile"
+                class="sidebar-link d-flex align-items-center load-page"
+                data-route
+              >
+                <i class="align-middle me-2" data-feather="user"></i>
+                <span class="align-middle">Admin Profile</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a
+                href="/admin/siteSettings"
+                class="sidebar-link d-flex align-items-center load-page"
+                data-route
+              >
+                <i class="align-middle me-2" data-feather="settings"></i>
+                <span class="align-middle">Site Settings</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a
+                href="/admin/nodemailer"
+                class="sidebar-link d-flex align-items-center load-page"
+                data-route
+              >
+                <i class="align-middle me-2" data-feather="mail"></i>
+                <span class="align-middle">NodeMailer Setup</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="main">
+        <nav
+          class="navbar navbar-expand navbar-light"
+          style="justify-content: space-between; background: #00796b !important"
+        >
+          <a class="sidebar-toggle js-sidebar-toggle"
+            ><i class="hamburger align-self-center"></i
+          ></a>
+          <div
+            id="sidebarProfilePreview"
+            class="d-flex gap-2"
+            style="align-items: center"
+          >
+            <img
+              id="sidebarProfilePic"
+              src="/admin/auth/default.jpg"
+              class="sidebarProfilePic"
+              style="
+                width: 35px;
+                height: 35px;
+                object-fit: cover;
+                cursor: pointer;
+                border-radius: 50%;
+              "
+              alt="Profile"
+            />
+            <div id="sidebarProfileName" class="fw-bold" style="color: #fff">
+              Admin
+            </div>
+            <button onclick="handleLogout()" class="btn btn-danger btn-sm">
+              <i class="align-middle" data-feather="log-out"></i>
+              Logout
+            </button>
+          </div>
+        </nav>
+
+        <main class="content">
+          <div class="container-fluid p-0">
+            <nav id="customBreadcrumb" class="breadcrumb-nav"></nav>
+            <div id="pageContent"></div>
+          </div>
+        </main>
+
+        <footer class="footer">
+          <div class="container-fluid">
+            <div class="row text-muted">
+              <div class="col-12 text-center">
+                <p class="mb-0">
+                  Developed by &copy;
+                  <a
+                    class="text-muted"
+                    href="https://facebook.com/mdsagormia/"
+                    target="_blank"
+                    ><strong>Md Sagor Mia</strong></a
+                  >
+                </p>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+    <div
+      id="pageLoader"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.7);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+      "
+    >
+      <div
+        style="
+          border: 4px solid #ccc;
+          border-top: 4px solid #007bff;
+          border-radius: 50%;
+          width: 50px;
+          height: 50px;
+          animation: spin 1s linear infinite;
+        "
+      ></div>
+    </div>
+    <script src="./loader.js"></script>
+    <script src="app.js"></script>
+    <script>
+      // ✅ New Order Badge System
+      // fetch("/api/newOrderCount")
+      //   .then((res) => res.json())
+      //   .then((data) => {
+      //     const badge = document.getElementById("orderBadge");
+      //     if (data.count > 0) {
+      //       const ding = new Audio("ding.mp3");
+      //       ding.play();
+      //     }
+      //   });
+      let previousCount = 0;
+      const notificationSound = new Audio("ding.mp3"); // ding path
+
+      function loadNewOrderBadge() {
+        fetch("/api/newOrderCount")
+          .then((res) => res.json())
+          .then((data) => {
+            const badge = document.getElementById("orderBadge");
+            if (data.count > 0) {
+              badge.textContent = data.count;
+              badge.style.display = "inline-block";
+
+              // 🔔 Sound play korbe sudhu jokhon count bereche
+              if (data.count > previousCount) {
+                notificationSound.play();
+              }
+            } else {
+              badge.style.display = "none";
+            }
+
+            // Update previous count
+            previousCount = data.count;
+          });
+      }
+
+      function visitAllOrders() {
+        fetch("/api/markOrdersSeen", { method: "POST" }).then(() => {
+          const badge = document.getElementById("orderBadge");
+          if (badge) badge.style.display = "none";
+        });
+      }
+
+      // ✅ Initialize allOrders page
+      document.addEventListener("DOMContentLoaded", () => {
+        loadNewOrderBadge();
+
+        // ✅ Then refresh every 3 seconds
+        setInterval(loadNewOrderBadge, 1000); // 1000ms = 1 seconds
+      });
+      fetch("/api/admin/profile")
+        .then((res) => res.json())
+        .then((data) => {
+          const profilePic =
+            "/api/admin/profilePic" || "/admin/auth/default.jpg";
+          const name = data.profile || "Admin";
+          document.getElementById("sidebarProfilePic").src = profilePic;
+          document.getElementById("sidebarProfileName").textContent = name.name;
+        })
+        .catch(() => {
+          // fallback if needed
+        });
+      var submenuRoutes = ["allProducts", "newProduct"];
+      function navigate(path, skipSubmenuToggle = false) {
+        const page = path.split("/").pop();
+        fetch(`/admin/pages/${page}.html`)
+          .then((res) => {
+            if (!res.ok) throw new Error("404");
+            return res.text();
+          })
+          .then((html) => {
+            const pageContent = document.getElementById("pageContent");
+            pageContent.classList.remove("slide-up");
+            pageContent.innerHTML = "";
+
+            setTimeout(() => {
+              pageContent.innerHTML = html;
+              void pageContent.offsetWidth;
+              pageContent.classList.add("slide-up");
+
+              const script = document.createElement("script");
+              script.src = `/admin/pages/js/${page}.js`;
+              script.onload = () => {
+                if (
+                  typeof initAllProductsTable === "function" &&
+                  page === "allProducts"
+                ) {
+                  initAllProductsTable();
+                }
+                if (
+                  typeof initNewProductForm === "function" &&
+                  page === "newProduct"
+                ) {
+                  initNewProductForm();
+                }
+                if (
+                  typeof initAllOrdersTable === "function" &&
+                  page === "allOrders"
+                ) {
+                  initAllOrdersTable();
+                }
+                if (
+                  typeof initDashboardCount === "function" &&
+                  page === "dashboard"
+                ) {
+                  initDashboardCount();
+                }
+                if (
+                  typeof initAdminProfile === "function" &&
+                  page === "adminProfile"
+                ) {
+                  initAdminProfile();
+                }
+                if (
+                  typeof initSiteSettings === "function" &&
+                  page === "siteSettings"
+                ) {
+                  initSiteSettings();
+                }
+                if (
+                  typeof initNodeMailer === "function" &&
+                  page === "nodemailer"
+                ) {
+                  initNodeMailer();
+                }
+              };
+              document.body.appendChild(script);
+              // ✅ Auto-hide sidebar on mobile/tablet
+              if (window.innerWidth < 992) {
+                const sidebarr = document.getElementById("sidebar");
+                sidebarr.classList.remove("collapsed");
+              }
+            }, 1);
+
+            history.pushState({}, "", `/admin/${page}`);
+            setActiveMenu(`/admin/${page}`);
+            generateCustomBreadcrumb(page);
+
+            if (!skipSubmenuToggle) {
+              toggleSubmenuForPage(page);
+            }
+
+            if (!submenuRoutes.includes(page)) {
+              const submenu = document.querySelector("#blankSubmenu");
+              const submenuArrow = document.querySelector(
+                '[data-bs-toggle="collapse"] .submenu-arrow'
+              );
+              submenu?.classList.remove("show");
+              submenuArrow?.classList.remove("rotate");
+            }
+          })
+          .catch(() => {
+            document.getElementById("pageContent").innerHTML =
+              "<h3>Page not found</h3>";
+          });
+      }
+
+      function setActiveMenu(path) {
+        document.querySelectorAll("[data-route]").forEach((link) => {
+          const href = link.getAttribute("href");
+          const parent = link.closest(".sidebar-item");
+          if (parent) {
+            parent.classList.toggle("active", href === path);
+          }
+        });
+      }
+
+      function generateCustomBreadcrumb(page) {
+        const breadcrumb = document.getElementById("customBreadcrumb");
+        breadcrumb.innerHTML = "";
+
+        const labelMap = {
+          dashboard: "Dashboard",
+          allProducts: "All Products",
+          newProduct: "New Product",
+          profile: "Profile",
+          user: "Users",
+          settings: "Settings",
+          allOrders: "All Orders",
+          adminProfile: "Admin Profile",
+          siteSettings: "Site Settings",
+          nodemailer: "Nodemailer Setup",
+        };
+
+        const root = document.createElement("a");
+        root.href = "/admin/dashboard";
+        root.textContent = "Dashboard";
+        breadcrumb.appendChild(root);
+
+        if (page && page !== "dashboard") {
+          const separator = document.createElement("span");
+          separator.className = "separator";
+          separator.textContent = " › ";
+          breadcrumb.appendChild(separator);
+
+          const label =
+            labelMap[page] || page.charAt(0).toUpperCase() + page.slice(1);
+          const active = document.createElement("span");
+          active.className = "active";
+          active.textContent = label;
+          breadcrumb.appendChild(active);
+        }
+      }
+
+      function toggleSubmenuForPage(page) {
+        const submenu = document.querySelector("#blankSubmenu");
+        const submenuArrow = document.querySelector(
+          '[data-bs-toggle="collapse"] .submenu-arrow'
+        );
+
+        if (submenuRoutes.includes(page)) {
+          submenu.classList.add("show");
+          submenuArrow?.classList.add("rotate");
+        } else {
+          submenu.classList.remove("show");
+          submenuArrow?.classList.remove("rotate");
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll("[data-route]").forEach((link) => {
+          link.addEventListener("click", (e) => {
+            e.preventDefault();
+            const path = link.getAttribute("href");
+            navigate(path, true); // avoid toggling submenu on click
+          });
+        });
+
+        window.addEventListener("popstate", () => {
+          const page = location.pathname.split("/").pop();
+          navigate(location.pathname); // reload case
+          generateCustomBreadcrumb(page);
+        });
+
+        const fullPath = location.pathname;
+        const page = fullPath.split("/").pop();
+        const firstPage = !page || page === "admin" ? "dashboard" : page;
+
+        navigate(`/admin/${firstPage}`);
+
+        const submenuToggle = document.querySelector(
+          '[data-bs-toggle="collapse"]'
+        );
+        const submenuArrow = submenuToggle?.querySelector(".submenu-arrow");
+        const submenu = document.querySelector("#blankSubmenu");
+
+        submenu?.addEventListener("show.bs.collapse", () =>
+          submenuArrow?.classList.add("rotate")
+        );
+        submenu?.addEventListener("hide.bs.collapse", () =>
+          submenuArrow?.classList.remove("rotate")
+        );
+      });
+      function handleLogout() {
+        if (confirm("Are you sure you want to logout?")) {
+          fetch("/api/logout").then(() => {
+            window.location.href = "/admin/login";
+          });
+        }
+      }
+    </script>
+  </body>
+</html>

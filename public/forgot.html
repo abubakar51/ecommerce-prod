@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forgot Password</title>
+
+    <!-- Materialize CSS -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Jost:wght@400;500;700&display=swap");
+      body {
+        font-family: "Jost", sans-serif !important;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(-45deg, #ff6ec4, #7873f5, #47e9ff, #ffc371);
+        background-size: 400% 400%;
+        animation: gradientBG 5s ease infinite;
+      }
+      @keyframes gradientBG {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+      .container {
+        max-width: 500px;
+        padding: 30px;
+        background: white;
+        border-radius: 10px;
+      }
+      #credentialsSection {
+        display: none;
+      }
+      .spinner-icon {
+        width: 20px;
+        height: 20px;
+        border: 2px solid white;
+        border-top: 2px solid transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 8px;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .center-align {
+        margin-bottom: 2.5rem !important;
+      }
+      .center-spinner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container z-depth-3">
+      <!-- Email Input Section -->
+      <div id="emailSection">
+        <h5 class="center-align" style="color: #26a69a">Forgot Password</h5>
+        <div class="input-field">
+          <i class="material-icons prefix">email</i>
+          <input style="color: #26a69a" type="email" id="email" required />
+          <label for="email">Enter Admin Email</label>
+        </div>
+
+        <button class="btn waves-effect waves-light" id="sendOtpBtn">
+          Send OTP <i class="material-icons right" id="sendIcon">send</i>
+        </button>
+      </div>
+
+      <!-- Username & Password Section (after OTP verification) -->
+      <form id="loginForm">
+        <div id="credentialsSection">
+          <h5 class="center-align" style="color: #26a69a">Your Credentials</h5>
+          <div class="input-field">
+            <i class="material-icons prefix">person</i>
+            <input type="text" id="username" readonly />
+            <label for="username">Username</label>
+          </div>
+          <div class="input-field">
+            <i class="material-icons prefix">lock</i>
+            <input type="text" id="password" readonly />
+            <label for="password">Password</label>
+          </div>
+          <label style="margin-left: 5px; visibility: hidden">
+            <input type="checkbox" id="remember" />
+            <span>Remember me</span>
+          </label>
+          <br />
+          <button
+            type="submit"
+            class="btn waves-effect waves-light"
+            id="loginRedirectBtn"
+          >
+            Login <i class="material-icons right">login</i>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- OTP Modal -->
+    <div id="otpModal" class="modal">
+      <div class="modal-content">
+        <h5>Enter OTP</h5>
+        <div class="input-field">
+          <input type="text" id="otpInput" />
+          <label for="otpInput">OTP Code</label>
+          <span id="otpError" class="red-text"></span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn grey" id="cancelOtpBtn">Cancel</button>
+        <button id="verifyOtpBtn" class="btn waves-effect waves-light">
+          Verify
+        </button>
+      </div>
+    </div>
+
+    <!-- Materialize JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+      fetch("/api/siteSettings")
+        .then((res) => res.json())
+        .then(({ success, settings }) => {
+          if (!success) return;
+          // Favicon
+          const favicon = document.createElement("link");
+          favicon.rel = "icon";
+          favicon.type = "image/png";
+          favicon.href = "/api/siteImageGet/favicon";
+          document.head.appendChild(favicon);
+        });
+      let otpModal;
+
+      document.addEventListener("DOMContentLoaded", function () {
+        otpModal = M.Modal.init(document.getElementById("otpModal"), {
+          dismissible: false, // prevent outside click
+        });
+      });
+
+      const sendOtpBtn = document.getElementById("sendOtpBtn");
+      const sendIcon = document.getElementById("sendIcon");
+      const verifyOtpBtn = document.getElementById("verifyOtpBtn");
+      const cancelOtpBtn = document.getElementById("cancelOtpBtn");
+      const emailInput = document.getElementById("email");
+      const otpError = document.getElementById("otpError");
+
+      let currentEmail = "";
+
+      sendOtpBtn.addEventListener("click", async () => {
+        const email = emailInput.value.trim();
+        if (!email)
+          return M.toast({
+            html: `<span style="display: flex; align-items: center;">
+                      <i class="material-icons" style="font-size: 18px; margin-right: 8px;">warning</i>
+                      <span>Please Enter Admin Your Email</span>
+                    </span>`,
+            classes: "red lighten-1 white-text",
+          });
+
+        // Show spinner
+        sendIcon.innerHTML = "";
+        sendIcon.className = "spinner-icon";
+        sendOtpBtn.classList.add("center-spinner");
+
+        const res = await fetch("/api/send-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ email }),
+        });
+
+        const data = await res.json();
+
+        // Restore icon
+        sendOtpBtn.classList.remove("center-spinner");
+        sendIcon.className = "material-icons right";
+        sendIcon.innerText = "send";
+
+        if (data.success) {
+          currentEmail = email;
+          otpError.innerText = "";
+          otpModal.open();
+        } else {
+          M.toast({
+            html: `<span style="display: flex; align-items: center;">
+                      <i class="material-icons" style="font-size: 18px; margin-right: 8px;">warning</i>
+                      <span>This Email Is Not Admin Email</span>
+                    </span>`,
+            classes: "red lighten-1 white-text",
+          });
+        }
+      });
+
+      verifyOtpBtn.addEventListener("click", async () => {
+        const otp = document.getElementById("otpInput").value.trim();
+        const res = await fetch("/api/verify-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ email: currentEmail, otp }),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          otpError.innerText = "";
+          otpModal.close();
+
+          document.getElementById("username").value = data.username;
+          document.getElementById("password").value = data.password;
+          M.updateTextFields();
+
+          document.getElementById("credentialsSection").style.display = "block";
+          document.getElementById("emailSection").style.display = "none";
+        } else {
+          otpError.innerText = data.message || "Wrong OTP";
+        }
+      });
+
+      cancelOtpBtn.addEventListener("click", () => {
+        otpModal.close();
+      });
+
+      // document
+      //   .getElementById("loginRedirectBtn")
+      //   .addEventListener("click", () => {
+      //     window.location.href = "/admin/login";
+      //   });
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const username = document.getElementById("username").value.trim();
+          const password = document.getElementById("password").value.trim();
+          const remember = document.getElementById("remember").checked;
+
+          const res = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password, remember }),
+          });
+
+          const data = await res.json();
+          if (data.success) {
+            location.href = "/admin";
+          } else {
+            document.getElementById("errorMsg").style.display = "block";
+          }
+        });
+    </script>
+  </body>
+</html>

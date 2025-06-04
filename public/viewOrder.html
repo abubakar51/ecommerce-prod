@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>View Orders - Sagor Store</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        font-family: "Jost", sans-serif;
+      }
+
+      body {
+        background: #f0f2f5;
+        margin: 0;
+      }
+
+      nav {
+        background: linear-gradient(45deg, #2196f3, #21cbf3);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .nav-wrapper {
+        display: flex;
+        align-items: center;
+        height: 64px;
+      }
+
+      .brand-logo {
+        display: flex;
+        align-items: center;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+        text-decoration: none;
+      }
+
+      .brand-logo img {
+        height: 30px;
+        margin-right: 8px;
+      }
+
+      .container {
+        width: 100%;
+        padding: 5px;
+        margin: 10px auto;
+      }
+
+      .glass-card {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 10px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+      }
+
+      .btn-custom {
+        background-color: #2196f3;
+        border-radius: 8px;
+        width: 100%;
+      }
+
+      .btn-custom:hover {
+        background-color: #1976d2;
+      }
+
+      .order-header {
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .countdown {
+        font-size: 12px;
+        color: white;
+        margin-left: 6px;
+      }
+
+      .footer {
+        text-align: center;
+        padding: 20px 0;
+        color: #999;
+        margin-top: 60px;
+      }
+
+      table.striped > tbody > tr:nth-child(odd) {
+        background-color: #f5f5f5;
+      }
+
+      td,
+      th {
+        white-space: nowrap;
+        vertical-align: middle;
+      }
+
+      .table-container {
+        margin-top: 30px;
+        overflow-x: auto;
+      }
+
+      .input-field input {
+        font-size: 1.1rem;
+      }
+
+      .card-panel {
+        border-radius: 8px;
+        font-weight: 500;
+      }
+
+      @media (max-width: 600px) {
+        .brand-logo {
+          font-size: 1.1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="z-depth-1">
+      <div
+        class="nav-wrapper"
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 20px;
+          height: 64px;
+        "
+      >
+        <a
+          href="/home"
+          class="brand-logo"
+          id="siteBrand"
+          style="
+            display: flex;
+            align-items: center;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.3rem;
+            text-decoration: none;
+          "
+        >
+          <img
+            src="/api/siteImageGet/logo"
+            alt="Logo"
+            id="siteLogo"
+            style="height: 30px; margin-right: 10px; display: none"
+          />
+          <span id="siteNameText">Loading...</span>
+        </a>
+        <!-- Optional right-side button or links could go here -->
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="glass-card">
+        <h5 class="order-header">View Your Orders</h5>
+
+        <div class="row">
+          <div class="input-field col s12 m9">
+            <input type="tel" id="mobileInput" />
+            <label for="mobileInput">Enter your mobile number</label>
+          </div>
+          <div class="input-field col s12 m3">
+            <button
+              id="btn"
+              class="btn btn-custom waves-effect waves-light"
+              onclick="fetchOrders()"
+            >
+              View Orders
+            </button>
+          </div>
+        </div>
+
+        <div
+          id="orderTableWrapper"
+          class="table-container"
+          style="display: none"
+        >
+          <table class="striped highlight centered">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer Name</th>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Delivery charge</th>
+                <th>Total cost</th>
+                <th>Address</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="orderTableBody"></tbody>
+          </table>
+        </div>
+
+        <div
+          id="noData"
+          class="card-panel yellow lighten-4 center-align"
+          style="display: none"
+        >
+          No orders found for this number.
+        </div>
+      </div>
+    </div>
+
+    <!-- Materialize JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!-- Your backend-connected script (fetchOrders, logo, etc.) goes here -->
+    <script>
+      document
+        .getElementById("mobileInput")
+        .addEventListener("keyup", function (e) {
+          if (e.key === "Enter") document.getElementById("btn").click();
+        });
+
+      document
+        .getElementById("mobileInput")
+        .addEventListener("input", function () {
+          this.value = this.value.replace(/[^0-9]/g, "");
+        });
+
+      fetch("/api/siteSettings")
+        .then((res) => res.json())
+        .then(({ success, settings }) => {
+          if (!success) return;
+
+          document.title = "View Orders | " + settings.siteName || "Store";
+
+          const favicon = document.createElement("link");
+          favicon.rel = "icon";
+          favicon.type = "image/png";
+          favicon.href = "/api/siteImageGet/favicon";
+          document.head.appendChild(favicon);
+
+          const brand = document.getElementById("siteBrand");
+          const showLogo = settings.show_logo === "true";
+          const showName = settings.show_site_name === "true";
+
+          if (showLogo && showName) {
+            brand.innerHTML = `<img src="/api/siteImageGet/logo" /><span>${settings.siteName}</span>`;
+          } else if (showLogo) {
+            brand.innerHTML = `<img src="/api/siteImageGet/logo" />`;
+          } else if (showName) {
+            brand.innerHTML = `<span>${settings.siteName}</span>`;
+          } else {
+            brand.textContent = "";
+          }
+        });
+
+      function getMobileFromURL() {
+        const parts = window.location.pathname.split("/");
+        return parts.length === 3 ? parts[2] : null;
+      }
+
+      function fetchOrders(mobileOverride = null) {
+        const input = document.getElementById("mobileInput");
+        const button = document.getElementById("btn");
+        let rawMobile = mobileOverride || input.value.trim();
+
+        if (!rawMobile) return alert("Please enter your mobile number.");
+
+        if (rawMobile.startsWith("+880")) {
+          rawMobile = "0" + rawMobile.slice(4);
+        } else if (rawMobile.startsWith("880")) {
+          rawMobile = "0" + rawMobile.slice(3);
+        }
+
+        const mobile = rawMobile;
+
+        button.disabled = true;
+        button.innerHTML = `<div class="preloader-wrapper small active">
+          <div class="spinner-layer spinner-blue-only">
+            <div class="circle-clipper left"><div class="circle"></div></div>
+            <div class="gap-patch"><div class="circle"></div></div>
+            <div class="circle-clipper right"><div class="circle"></div></div>
+          </div></div>`;
+
+        if (!mobileOverride)
+          history.replaceState(null, "", `/viewOrder/${mobile}`);
+
+        fetch(`/api/orders/${mobile}`)
+          .then((res) => res.json())
+          .then((orders) => {
+            const table = document.getElementById("orderTableWrapper");
+            const body = document.getElementById("orderTableBody");
+            const noData = document.getElementById("noData");
+
+            if (!orders.length) {
+              table.style.display = "none";
+              noData.style.display = "block";
+              return;
+            }
+
+            body.innerHTML = "";
+
+            orders.forEach((order) => {
+              const statusColor =
+                order.status === "pending"
+                  ? "orange"
+                  : order.status === "complete"
+                  ? "green"
+                  : "red";
+
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+                <td><a href="/previewOrder/${
+                  order.order_id
+                }" target="_blank">#${order.order_id}</a></td>
+                <td>${order.name}</td>
+                <td>${order.product_name || "-"}</td>
+                <td>${order.p_price} BDT</td>
+                <td>${order.qty}</td>
+                <td>${order.d_charge} Tk</td>
+                <td>${
+                  parseFloat(order.p_price) * parseFloat(order.qty) +
+                  parseFloat(order.d_charge)
+                } BDT</td>
+                <td>${order.address}</td>
+                <td><span class="new badge ${statusColor}" data-badge-caption="">${
+                order.status
+              }</span></td>
+                <td id="action-${order.order_id}"></td>
+              `;
+              body.appendChild(tr);
+
+              if (order.status === "pending") {
+                const actionCell = document.getElementById(
+                  `action-${order.order_id}`
+                );
+                const cancelBtn = document.createElement("button");
+                cancelBtn.className = "btn red lighten-1";
+                cancelBtn.textContent = "Cancel Order";
+
+                const countdown = document.createElement("span");
+                countdown.className = "countdown";
+                countdown.id = `countdown-${order.order_id}`;
+                cancelBtn.appendChild(countdown);
+                actionCell.appendChild(cancelBtn);
+
+                const createdAt = new Date(order.created_at);
+                const expireAt = new Date(createdAt.getTime() + 10 * 60 * 1000);
+
+                const updateTimer = () => {
+                  const now = new Date();
+                  const diff = expireAt - now;
+
+                  if (diff <= 0) {
+                    cancelBtn.disabled = true;
+                    cancelBtn.textContent = "Shipping";
+                    clearInterval(interval);
+                    return;
+                  }
+
+                  const mins = Math.floor(diff / 60000);
+                  const secs = Math.floor((diff % 60000) / 1000);
+                  countdown.innerText = ` ${String(mins).padStart(
+                    2,
+                    "0"
+                  )}:${String(secs).padStart(2, "0")} Left`;
+                };
+
+                const interval = setInterval(updateTimer, 1000);
+                updateTimer();
+
+                cancelBtn.onclick = () => {
+                  if (confirm("Are you sure you want to cancel this order?")) {
+                    fetch("/api/cancelOrder", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ order_id: order.order_id }),
+                    })
+                      .then((res) => res.json())
+                      .then((res) => {
+                        if (res.success) {
+                          alert("Order canceled!");
+                          fetchOrders(mobile);
+                        } else {
+                          alert("Failed to cancel order.");
+                        }
+                      });
+                  }
+                };
+              }
+            });
+
+            table.style.display = "block";
+            noData.style.display = "none";
+          })
+          .catch((err) => {
+            console.error("Fetch error:", err);
+            alert("Failed to load orders. Please try again later.");
+          })
+          .finally(() => {
+            button.disabled = false;
+            button.innerHTML = "View Orders";
+          });
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        M.updateTextFields(); // Fix for Materialize label overlapping
+
+        const mobileFromURL = getMobileFromURL();
+        if (mobileFromURL) {
+          const input = document.getElementById("mobileInput");
+          input.value = mobileFromURL;
+
+          // Trigger floating label for pre-filled input
+          M.updateTextFields();
+
+          fetchOrders(mobileFromURL);
+        }
+      });
+      // All dynamic JS backend integration remains unchanged
+      // Copy fetchOrders() + mobile input listeners + logo title logic here from your original JS
+    </script>
+  </body>
+</html>
