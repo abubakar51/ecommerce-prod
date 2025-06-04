@@ -27,7 +27,7 @@ app.use(
     origin: [
       "http://localhost:80",
       "http://localhost",
-      "https://sqd247fk-80.asse.devtunnels.ms/forgot",
+      "https://sqd247fk-80.asse.devtunnels.ms/",
     ],
     credentials: true,
   })
@@ -43,8 +43,8 @@ app.use(
     saveUninitialized: true,
     cookie: {
       httpOnly: true,
-      secure: false, // true for HTTPS/devtunnel, false for localhost
-      sameSite: "Lax", // Cross-site এর জন্য
+      secure: isSecure, // true for HTTPS/devtunnel, false for localhost
+      sameSite: "none", // Cross-site এর জন্য
       maxAge: 10 * 60 * 1000,
     },
   })
