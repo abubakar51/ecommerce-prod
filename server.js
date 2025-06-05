@@ -31,7 +31,7 @@ app.use(
   })
 );
 const isSecure = true; // devtunnel is also https
-
+app.set("trust proxy", 1); // 🔥 very important for render HTTPS
 app.use(
   session({
     name: "connect.sid",
