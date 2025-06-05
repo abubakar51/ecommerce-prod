@@ -25,9 +25,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: [
-      "http://localhost:80",
-      "http://localhost",
-      "https://sqd247fk-80.asse.devtunnels.ms/",
+      "https://ecommerce-prod-3iis.onrender.com/",
     ],
     credentials: true,
   })
