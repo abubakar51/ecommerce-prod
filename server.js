@@ -30,8 +30,7 @@ app.use(
     credentials: true,
   })
 );
-const isSecure = process.env.NODE_ENV === "production"; // devtunnel is also https
-console.log(isSecure);
+const isSecure = true; // devtunnel is also https
 
 app.use(
   session({
