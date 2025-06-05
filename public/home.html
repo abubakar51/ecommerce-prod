@@ -84,17 +84,32 @@
         padding: 10px;
         background: white;
         color: black;
-        border-radius: 8px;
+        border-radius: 5px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         flex: 1 1 calc(50% - 40px);
-        max-width: 250px;
+        max-width: 220px;
         display: flex;
         flex-direction: column;
       }
+      @media (min-width: 500px) {
+        .product-card h6 {
+          font-size: clamp(0.6rem, 0.7vw, 0.7rem);
+        }
 
+        .product-card p {
+          font-size: clamp(0.7rem, 0.8vw, 0.8rem);
+        }
+      }
       @media (min-width: 768px) {
         .product-card {
           flex: 1 1 calc(33.333% - 40px);
+        }
+        .product-card h6 {
+          font-size: clamp(0.6rem, 0.7vw, 0.7rem);
+        }
+
+        .product-card p {
+          font-size: clamp(0.7rem, 0.8vw, 0.8rem);
         }
       }
 
@@ -110,15 +125,26 @@
         background: #2cabc5a6;
         display: flex;
         align-items: center;
+        position: relative;
       }
-
+      .contact {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #fff;
+        color: #333;
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        border-radius: 5px;
+        font-weight: bold;
+      }
       .product-card .card-image img {
         object-fit: contain;
         width: 100%;
       }
 
       .product-card h6 {
-        font-size: clamp(1rem, 1.2vw, 1.2rem);
+        font-size: clamp(0.9rem, 1vw, 1rem);
         font-weight: 600;
         margin-bottom: 5px;
       }
@@ -174,7 +200,7 @@
     <!-- Navbar -->
     <div class="navbar-fixed">
       <nav class="blue lighten-1">
-        <div class="nav-wrapper container">
+        <div class="nav-wrapper">
           <a
             href="/home"
             class="brand-logo"
@@ -184,8 +210,8 @@
               align-items: center;
               font-size: clamp(1.2rem, 2.5vw, 2rem);
               white-space: nowrap;
-              font-weight: bold;
               height: 100%;
+              padding: 0 20px;
             "
           ></a>
           <a href="#" data-target="mobile-demo" class="sidenav-trigger"
@@ -215,6 +241,7 @@
           Welcome
         </h4></marquee
       >
+      <div class="contact"></div>
     </div>
 
     <!-- Products -->
@@ -315,7 +342,9 @@
           } else if (showName) {
             brand.textContent = settings.siteName;
           }
-
+          document.querySelector(
+            ".contact"
+          ).textContent = `Contact no. ${settings.headerTitle}`;
           document.getElementById("bannerTitle").textContent =
             settings.bannerTitle || "Welcome";
           document.getElementById("productTitle").textContent =
