@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: [
-      "https://ecommerce-prod-3iis.onrender.com/",
+      "https://ecommerce-prod-3iis.onrender.com",
     ],
     credentials: true,
   })
