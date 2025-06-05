@@ -31,7 +31,6 @@ app.use(
   })
 );
 const isSecure = process.env.NODE_ENV === "production"; // devtunnel is also https
-console.log(isSecure);
 
 app.use(
   session({
@@ -42,7 +41,7 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: isSecure, // true for HTTPS/devtunnel, false for localhost
-      sameSite: "none", // Cross-site এর জন্য
+      sameSite: "lax", // Cross-site এর জন্য
       maxAge: 10 * 60 * 1000,
     },
   })
