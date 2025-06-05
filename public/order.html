@@ -27,15 +27,12 @@
       }
       body {
         background: linear-gradient(45deg, #2196f3, #21cbf3);
-        padding-bottom: 50px;
       }
       nav {
         background: linear-gradient(45deg, #2196f3, #21cbf3);
         padding: 0 20px;
       }
       nav .brand-logo {
-        font-weight: 700;
-        font-size: 1.6rem;
         line-height: 64px;
         display: flex;
         align-items: center;
@@ -143,7 +140,14 @@
     <!-- Materialize Navbar -->
     <nav>
       <div class="nav-wrapper">
-        <a href="/home" class="brand-logo" id="siteBrand"> Loading... </a>
+        <a
+          href="/home"
+          class="brand-logo"
+          id="siteBrand"
+          style="font-size: clamp(1.2rem, 2.5vw, 2rem); white-space: nowrap"
+        >
+          Loading...
+        </a>
       </div>
     </nav>
 
