@@ -188,7 +188,7 @@
         sendIcon.className = "spinner-icon";
         sendOtpBtn.classList.add("center-spinner");
 
-        const res = await fetch("/api/send-otp", {
+        const res = await fetch("https://ecommerce-prod-3iis.onrender.com/api/send-otp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -219,7 +219,7 @@
 
       verifyOtpBtn.addEventListener("click", async () => {
         const otp = document.getElementById("otpInput").value.trim();
-        const res = await fetch("/api/verify-otp", {
+        const res = await fetch("https://ecommerce-prod-3iis.onrender.com/api/verify-otp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
