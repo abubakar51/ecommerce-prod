@@ -40,7 +40,7 @@ app.use(
     saveUninitialized: true,
     cookie: {
       httpOnly: true,
-      secure: isSecure, // true for HTTPS/devtunnel, false for localhost
+      secure: false, // true for HTTPS/devtunnel, false for localhost
       sameSite: "lax", // Cross-site এর জন্য
       maxAge: 10 * 60 * 1000,
     },
